@@ -1,2 +1,2 @@
-# giotest
-a project to learn how to use github.io
+# donlin project
+don-lin's personal website

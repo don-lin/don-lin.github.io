@@ -1,0 +1,36 @@
+ .mid-group img{
+                width: 300px;
+            }
+            .small-img{
+                width: 40px;
+            }
+            .mid-img{
+                width: 60px;
+            }
+            .large-img{
+                width: 80px;
+            }
+
+ @media screen and (max-width: 700px) {
+            button{
+                width: 50px;
+            }
+            input{
+                width: 50px;
+            }
+            .mid-group img{
+                width: 100px;
+            }
+            .small-img{
+                width: 30px;
+            }
+            .mid-img{
+                width: 40px;
+            }
+            .large-img{
+                width: 60px;
+            }
+            .left-group, .right-group{
+                width: 100px;
+            }
+        }
