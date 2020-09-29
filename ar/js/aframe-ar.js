@@ -2205,6 +2205,13 @@ ARjs.MarkerControls.prototype._initArtoolkit = function(){
 
 		// listen to the event
 		arController.addEventListener('getMarker', function(event){
+			console.log('marker-dir: ', event.data.marker.dir);
+			console.log('marker pos: ', event.data.marker.pos);
+			if(event.data.marker.dir==2){
+				hiroEntity=document.querySelector("#hiro a-entity")
+				hiroEntity.getAttribute("position").x=(event.data.marker.pos[0]-200)/100
+				hiroEntity.getAttribute("position").z=(event.data.marker.pos[1]-200)/100
+			}
 			if( event.data.type === artoolkit.PATTERN_MARKER && _this.parameters.type === 'pattern' ){
 				if( artoolkitMarkerId === null )	return
 				if( event.data.marker.idPatt === artoolkitMarkerId ) onMarkerFound(event)
