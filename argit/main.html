@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html>
+    <script src="js/aframe.min.js"></script>
+    <!-- we import arjs version without NFT but with marker + location based support -->
+    <script src="js/aframe-ar.js"></script>
+    <script src="js/gesture-detector.js"></script>
+    <script src="js/gesture-handler.js"></script>
+	<script src="js/joy.js"></script>
+
+    <style>
+        .buttons {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 5em;
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          z-index: 10;
+        }
+		.columnLateral{
+			position: absolute;
+			bottom:0px;
+			left: 100px;
+			z-index:9999999;
+		}
+    
+        .say-hi-button {
+          padding: 0.25em;
+          border-radius: 4px;
+          border: none;
+          background: white;
+          color: black;
+          width: 4em;
+          height: 2em;
+        }
+      </style>
+
+    <script>
+        AFRAME.registerComponent('registerevents', {
+		init: function () {
+			var marker = this.el;
+
+			marker.addEventListener('markerFound', function() {
+				var markerId = marker.id;
+				console.log('markerFound', markerId);
+				// TODO: Add your own code here to react to the marker being found.
+			});
+
+			marker.addEventListener('markerLost', function() {
+				var markerId = marker.id;
+				console.log('markerLost', markerId);
+				// TODO: Add your own code here to react to the marker being lost.
+			});
+		}
+	});
+    </script>
+
+    <body style="margin : 0px; overflow: hidden;">
+		<div class="columnLateral">
+			<div id="joy1Div" style="width:200px;height:200px"></div>
+			X :<input id="joy1X" type="text" /></br>
+			Y :<input id="joy1Y" type="text" />
+		</div>
+        <div class="buttons">
+            <table>
+                <tr><td></td>
+                    <td><button class="say-hi-button">up</button></td>
+                <td></td></tr>
+                <tr>
+                    <td><button class="say-hi-button">left</button></td>
+                    <td><button class="say-hi-button">down</button></td>
+                    <td><button class="say-hi-button">right</button></td>
+                </tr>
+            </table>
+                
+            </ol>
+        </div>
+        <a-scene embedded arjs embedded renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector>
+        <a-marker preset="hiro" id="hiro" registerevents>
+            <a-entity
+            position="0 0 0"
+            scale="0.05 0.05 0.05"
+            rotation="-90 0 0"
+            gltf-model="model/code.glb"
+            class="clickable"
+            gesture-handler
+            ></a-entity>
+            
+            
+            <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1"  material='opacity: 0.5; color: #7BC8A4;'></a-plane>
+        </a-marker>
+
+        <a-marker preset="kanji" id="kanji" registerevents>
+
+            <a-entity
+            position="0 1 0"
+            scale="0.05 0.05 0.05"
+            rotation="0 0 0"
+            obj-model="obj: url(model/coden.obj); mtl: url(model/code.mtl)"
+            class="clickable"
+            gesture-handler
+            ></a-entity>
+            
+            <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1"  material='opacity: 0.5; color: #77CCCC;'></a-plane>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+        </a-scene>
+    </body>    
+	
+	<script>
+		
+		var Joy1 = new JoyStick('joy1Div');
+
+		var joy1X = document.getElementById("joy1X");
+		var joy1Y = document.getElementById("joy1Y");
+
+		setInterval(function(){ joy1X.value=Joy1.GetX(); }, 50);
+		setInterval(function(){ joy1Y.value=Joy1.GetY(); }, 50);
+
+    </script>
+</html>

@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html>
+    <script src="js/aframe.min.js"></script>
+    <!-- we import arjs version without NFT but with marker + location based support -->
+    <script src="js/aframe-ar.js"></script>
+    <script src="js/gesture-detector.js"></script>
+    <script src="js/gesture-handler.js"></script>
+	<script src="js/joy.js"></script>
+
+    <style>
+        .buttons {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 100%;
+            height: 5em;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 10;
+        }
+		.columnLateral{
+			position: absolute;
+			bottom:100px;
+			left: 100px;
+			z-index:9999999;
+		}
+    
+        .say-hi-button {
+          padding: 0.25em;
+          border-radius: 4px;
+          border: none;
+          background: white;
+          color: black;
+          width: 4em;
+          height: 2em;
+        }
+      </style>
+
+    <script>
+        AFRAME.registerComponent('registerevents', {
+		init: function () {
+			var marker = this.el;
+
+			marker.addEventListener('markerFound', function() {
+				var markerId = marker.id;
+				console.log('markerFound', markerId);
+				// TODO: Add your own code here to react to the marker being found.
+			});
+
+			marker.addEventListener('markerLost', function() {
+				var markerId = marker.id;
+				console.log('markerLost', markerId);
+				// TODO: Add your own code here to react to the marker being lost.
+			});
+		}
+	});
+    </script>
+
+    <body style="margin : 0px; overflow: hidden;">
+		<div class="columnLateral">
+			<div id="joy1Div" style="width:200px;height:200px"></div>
+			X :<input id="joy1X" type="text" /></br>
+			Y :<input id="joy1Y" type="text" />
+		</div>
+        <div class="buttons">
+            <table>
+                <tr>
+                    <td><button class="score-button">your score: 0</button></td>
+                </tr>
+            </table>
+                
+            </ol>
+        </div>
+        <a-scene embedded arjs="sourceType: webcam; debugUIEnabled: false;" embedded renderer="logarithmicDepthBuffer: true;" vr-mode-ui="enabled: false" gesture-detector>
+        <a-marker preset="hiro" id="hiro" registerevents>
+
+            
+            
+            <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1"  material='opacity: 0.5; color: #7BC8A4;'></a-plane>
+        </a-marker>
+
+        <a-marker preset="kanji" id="kanji" registerevents>
+            <a-entity
+            class="iron-model"
+            position="0 0 0"
+            scale="0.05 0.05 0.05"
+            rotation="-90 45 0"
+            obj-model="obj: url(model/ironman.obj); mtl: url(model/ironman.mtl)"
+            class="clickable"
+            gesture-handler
+            ></a-entity>
+
+            <a-entity
+            class="code-model"
+            position="0 1 0.5"
+            scale="0.03 0.03 0.05"
+            rotation="0 180 0"
+            obj-model="obj: url(model/coden.obj); mtl: url(model/code.mtl)"
+            class="clickable"
+            gesture-handler
+            ></a-entity>
+            
+            <a-plane position="0 0 0" rotation="-90 0 0" width="1" height="1"  material='opacity: 0.8; color: #77CCCC;'></a-plane>
+            <a-plane position="0 0.01 0" rotation="-90 0 0" width="3" height="4"  material='opacity: 0.2; color: #77CCCC;'></a-plane>
+        </a-marker>
+
+        <a-entity camera></a-entity>
+        </a-scene>
+    </body>    
+	
+	<script>
+		
+		var Joy1 = new JoyStick('joy1Div');
+
+		var joy1X = document.getElementById("joy1X");
+        var joy1Y = document.getElementById("joy1Y");
+
+        var currentScore = 0
+        function updateScore(){
+            document.querySelector(".score-button").textContent="your score: "+currentScore;
+        }
+        
+        function limitMinMax(value,min,max){
+            if(value < min)
+                return min
+            if (value > max)
+                return max
+            return value
+        }
+
+        var currentStep=1.5;
+        var onLeft=true;
+
+        function codeForward(){
+            currentStep-=0.03;
+            if(currentStep<=-1){
+                currentStep=1.5;
+                onLeft=(randomInt(2)==0);
+                currentScore++;
+                updateScore()
+            }
+        }
+
+        function showCode(row,col){
+            codeModel=document.querySelector(".code-model");
+            pos=codeModel.getAttribute("position");
+
+            pos.x=row-1+0
+            pos.z=col-1+0.5
+
+            codeModel.setAttribute("position",pos);
+        }
+
+        function showCodeTwo(){
+            codeModel=document.querySelector(".code-model");
+            pos=codeModel.getAttribute("position");
+
+            pos.z=currentStep
+
+            if(onLeft){
+                pos.x=0.5;
+            }else{
+                pos.x=-0.5;
+            }
+
+
+            codeModel.setAttribute("position",pos);
+        }
+
+        function judge(){
+            codeModel=document.querySelector(".code-model");
+            ironManModel=document.querySelector(".iron-model");
+
+            piron=ironManModel.getAttribute("position");
+            pcode=codeModel.getAttribute("position");
+
+            x1=piron.x
+            z1=piron.z
+
+            x0=pcode.x
+            z0=pcode.z-0.3
+
+            if( (x1-x0)*(x1-x0)+(z1-z0)*(z1-z0) < 0.5 ){
+                if(z1>z0){
+                    return -1;
+                }else{
+                    return 1;
+                }
+            }else{
+                return 0;//not read the code
+            }
+        }
+
+        function randomInt(limit){
+            return Math.floor(Math.random()*limit);
+        }
+
+        var obstacleList=[]
+
+        setInterval(function(){
+            
+            codeForward()
+            showCodeTwo()
+
+            if(judge()!=0){
+                currentStep=1.5;
+                onLeft=(randomInt(2)==0);
+                currentScore--;
+                updateScore();
+            }
+
+            var gameMan=document.querySelector("#kanji a-entity");
+
+            joy1X.value=Joy1.GetX();
+            joy1Y.value=Joy1.GetY(); 
+        
+            x=Number(Joy1.GetX());
+            y=Number(Joy1.GetY());
+            rotateAngle=Math.atan(y/x)*180/Math.PI;
+            if(isNaN(Number(rotateAngle)))
+                return
+            
+            if(x<0)
+                rotateAngle+=180;
+
+            var originAngles=gameMan.getAttribute("rotation")
+            originAngles.y=rotateAngle-90;
+
+            originPosition=gameMan.getAttribute("position")
+            originPosition.z+=y/10000*4;
+            originPosition.x-=x/10000*4;
+            
+            originPosition.z=limitMinMax(originPosition.z,-2,2)
+            originPosition.x=limitMinMax(originPosition.x,-1.5,1.5)
+
+
+            gameMan.setAttribute("rotation",originAngles)
+        }, 50);
+
+    </script>
+</html>

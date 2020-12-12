@@ -1,0 +1,17 @@
+# Exported from 3D Builder
+
+#red color
+newmtl Mat_0_0_0
+Kd 0.465650 0.16 0.11
+
+newmtl Mat_1_0_0
+Kd 0.31 0.46 0.59
+
+newmtl Mat_2_0_0
+Kd 0.447596 0.447596 0.447596
+
+newmtl Mat_3_0_0
+Kd 0.39 0.34 0.20
+
+newmtl Mat_4_0_0
+Kd 1.000000 1.000000 1.000000
